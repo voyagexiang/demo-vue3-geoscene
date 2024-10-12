@@ -1,0 +1,10 @@
+@import 'https://js.geoscene.cn/4.29/@geoscene/core/assets/geoscene/themes/light/main.css';
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+}
+.mapdiv {
+  height: 98vh;
+}
