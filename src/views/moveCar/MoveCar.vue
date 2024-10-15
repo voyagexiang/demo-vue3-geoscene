@@ -17,7 +17,7 @@
 import Map from '@geoscene/core/Map'
 import SceneView from '@geoscene/core/views/SceneView'
 
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted } from 'vue'
 import Graphic from '@geoscene/core/Graphic'
 import Polyline from '@geoscene/core/geometry/Polyline'
 import MoveCar from './index'
