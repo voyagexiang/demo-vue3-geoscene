@@ -4,9 +4,7 @@ import { RouterLink, RouterView } from 'vue-router'
 
 <template>
   <header>
-
     <div class="wrapper">
-
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/mapPopup1">地图弹窗方式一</RouterLink>
@@ -17,7 +15,6 @@ import { RouterLink, RouterView } from 'vue-router'
       </nav>
     </div>
   </header>
-
   <RouterView />
 </template>
 
@@ -25,11 +22,6 @@ import { RouterLink, RouterView } from 'vue-router'
 header {
   line-height: 1.5;
   max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
 }
 
 nav {

@@ -115,6 +115,10 @@ function addPath() {
 }
 
 function startMove() {
+  dynamicGLTFRender.scene.add(dynamicGLTFRender.gltfMesh.scene)
+  let AnimationAction = dynamicGLTFRender.mixer.clipAction(dynamicGLTFRender.gltfMesh.animations[0])
+  AnimationAction.play()//播放动画
+
   movecar.startExecute()
 }
 
@@ -123,7 +127,7 @@ function endMove() {
 }
 
 function clearMove() {
-  movecar.clearCar()
+  dynamicGLTFRender.clearMesh()
 }
 
 </script>

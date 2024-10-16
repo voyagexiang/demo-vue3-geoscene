@@ -21,16 +21,19 @@ class DynamicGLTFAPI {
     this.isStop = !this.isStop
   }
 
-  updatePosition(
+  clearMesh() {
+    this.scene.remove(this.gltfMesh.scene)
+  }
+
+  updatePosition() {
     // {
     // point,
     // height, // 设置的模型高度视觉变量的属性值
     // heading // 设置模型水平旋转视觉变量的属性值
     // angleCount
     // }
-  ) {
+
     let that = this
-    console.log('jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj')
     return function(obj) {
       if (that.gltfMesh) {
         that.gltfMesh.scene.position.set(obj.carPoint.x, obj.carPoint.y, obj.height)
