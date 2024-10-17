@@ -11,18 +11,9 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@deck.gl/arcgis": "^8.7.8",
-    "@deck.gl/core": "^8.9.1",
-    "@deck.gl/geo-layers": "^8.9.1",
-    "@deck.gl/layers": "^8.9.1",
-    "@deck.gl/mesh-layers": "^8.9.1",
     "@element-plus/icons-vue": "^2.0.9",
-
-    "@esri/calcite-components": "^1.0.0-beta.93",
     "@geoscene/core": "^4.27.4",
-    "deck.gl": "^8.9.1",
     "element-plus": "^2.7.6",
-
     "pinia": "^2.1.7",
     "three": "^0.109.0",
     "threejs-meshline": "^2.0.0",
