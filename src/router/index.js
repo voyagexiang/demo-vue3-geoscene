@@ -23,12 +23,12 @@ const router = createRouter({
     {
       path: '/mapmodel',
       name: 'mapmodel',
-      component: () => import('@/views/gltfModelShow/MapModelView.vue')
+      component: () => import('@/views/gltfModelShow/index.vue')
     },
     {
       path: '/mapmodelmove',
       name: 'mapmodelmove',
-      component: () => import('@/views/gltfModelMoveShow/MapModelMoveView.vue')
+      component: () => import('@/views/gltfModelMoveShow/index.vue')
     },
     {
       path: '/movecar',
