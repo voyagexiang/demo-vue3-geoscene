@@ -10,8 +10,8 @@ import { RouterLink, RouterView } from 'vue-router'
         <RouterLink to="/mapPopup1">地图弹窗方式一</RouterLink>
         <RouterLink to="/mapPopup2">地图弹窗方式二</RouterLink>
         <RouterLink to="/mapmodel">加载动态Gltf</RouterLink>
-        <RouterLink to="/mapmodelmove">加载动态Gltf移动</RouterLink>
-        <RouterLink to="/movecar">小车移动</RouterLink>
+        <RouterLink to="/mapmodelmove">加载动态Gltf，路径回访</RouterLink>
+        <RouterLink to="/movecar">小车路径回放</RouterLink>
       </nav>
     </div>
   </header>

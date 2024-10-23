@@ -13,12 +13,12 @@ const router = createRouter({
     {
       path: '/mapPopup1',
       name: 'mapPopup1',
-      component: () => import('@/views/mapPopup/one/MapView.vue')
+      component: () => import('@/views/mapPopup/one/index.vue')
     },
     {
       path: '/mapPopup2',
       name: 'mapPopup2',
-      component: () => import('@/views/mapPopup/two/MapView.vue')
+      component: () => import('@/views/mapPopup/two/index.vue')
     },
     {
       path: '/mapmodel',
@@ -33,7 +33,7 @@ const router = createRouter({
     {
       path: '/movecar',
       name: 'movecar',
-      component: () => import('@/views/moveCar/MoveCar.vue')
+      component: () => import('@/views/moveCar/index.vue')
     }
   ]
 })
