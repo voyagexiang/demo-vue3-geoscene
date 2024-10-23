@@ -34,6 +34,11 @@ const router = createRouter({
       path: '/movecar',
       name: 'movecar',
       component: () => import('@/views/moveCar/index.vue')
+    },
+    {
+      path: '/extrudeLayer',
+      name: 'extrudeLayer',
+      component: () => import('@/views/extrudeLayer/index.vue')
     }
   ]
 })

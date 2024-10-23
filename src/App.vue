@@ -12,6 +12,7 @@ import { RouterLink, RouterView } from 'vue-router'
         <RouterLink to="/mapmodel">加载动态Gltf</RouterLink>
         <RouterLink to="/mapmodelmove">加载动态Gltf，路径回访</RouterLink>
         <RouterLink to="/movecar">小车路径回放</RouterLink>
+        <RouterLink to="/extrudeLayer">地面拉伸</RouterLink>
       </nav>
     </div>
   </header>

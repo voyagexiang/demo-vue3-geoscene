@@ -21,11 +21,9 @@ class DynamicGLTFAPI {
     this.isStop = !this.isStop
   }
   updatePosition(point) {
-    console.log('jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj')
 
     if(this.gltfMesh) {
       this.gltfMesh.scene.position.set(...point)
-      // this.gltfMesh.scene.rotateX(Math.PI / 2)
     }
 
   }
