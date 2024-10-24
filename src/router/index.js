@@ -44,6 +44,11 @@ const router = createRouter({
       path: '/bufferLine',
       name: 'bufferLine',
       component: () => import('@/views/bufferLine/index.vue')
+    },
+    {
+      path: '/buildingEffect',
+      name: 'buildingEffect',
+      component: () => import('@/views/buildingEffect/index.vue')
     }
   ]
 })

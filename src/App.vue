@@ -14,6 +14,7 @@ import { RouterLink, RouterView } from 'vue-router'
         <RouterLink to="/movecar">小车路径回放</RouterLink>
         <RouterLink to="/extrudeLayer">地面拉伸</RouterLink>
         <RouterLink to="/bufferLine">渐变边界线</RouterLink>
+        <RouterLink to="/buildingEffect">建筑效果</RouterLink>
       </nav>
     </div>
   </header>
