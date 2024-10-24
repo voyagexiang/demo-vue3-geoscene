@@ -18,8 +18,8 @@
 import Map from '@geoscene/core/Map.js'
 import MapView from '@geoscene/core/views/MapView'
 import FeatureLayer from '@geoscene/core/layers/FeatureLayer.js'
-import * as reactiveUtils from '@arcgis/core/core/reactiveUtils.js'
 import PopupComponent from '@/views/mapPopup/two/PopupComponent.vue'
+import * as reactiveUtils from '@geoscene/core/core/reactiveUtils.js'
 
 export default {
   name: 'App',

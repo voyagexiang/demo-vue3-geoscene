@@ -15,7 +15,8 @@ import ExtrudeLayer from '@/views/extrudeLayer/js/extrudeLayer.js'
 import Query from '@geoscene/core/rest/support/Query.js'
 import * as query from '@geoscene/core/rest/query.js'
 import * as three from 'three'
-import * as webgl from '@arcgis/core/views/3d/webgl.js'
+import * as  webgl from '@geoscene/core/views/3d/webgl.js'
+
 import * as externalRenderers from '@geoscene/core/views/3d/externalRenderers';
 
 window.THREE = three
