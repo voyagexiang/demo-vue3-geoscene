@@ -39,6 +39,11 @@ const router = createRouter({
       path: '/extrudeLayer',
       name: 'extrudeLayer',
       component: () => import('@/views/extrudeLayer/index.vue')
+    },
+    {
+      path: '/bufferLine',
+      name: 'bufferLine',
+      component: () => import('@/views/bufferLine/index.vue')
     }
   ]
 })
