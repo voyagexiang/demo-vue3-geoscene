@@ -54,6 +54,11 @@ const router = createRouter({
       path: '/odline',
       name: 'odline',
       component: () => import('@/views/ODLine/index.vue')
+    },
+    {
+      path: '/labelPoint',
+      name: 'labelPoint',
+      component: () => import('@/views/labelPoint/index.vue')
     }
   ]
 })
