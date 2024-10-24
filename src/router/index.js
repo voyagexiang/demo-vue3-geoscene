@@ -49,6 +49,11 @@ const router = createRouter({
       path: '/buildingEffect',
       name: 'buildingEffect',
       component: () => import('@/views/buildingEffect/index.vue')
+    },
+    {
+      path: '/odline',
+      name: 'odline',
+      component: () => import('@/views/ODLine/index.vue')
     }
   ]
 })

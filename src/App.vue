@@ -15,6 +15,7 @@ import { RouterLink, RouterView } from 'vue-router'
         <RouterLink to="/extrudeLayer">底面拉伸</RouterLink>
         <RouterLink to="/bufferLine">渐变边界线</RouterLink>
         <RouterLink to="/buildingEffect">建筑效果</RouterLink>
+        <RouterLink to="/odline">道路ODLine</RouterLink>
       </nav>
     </div>
   </header>
