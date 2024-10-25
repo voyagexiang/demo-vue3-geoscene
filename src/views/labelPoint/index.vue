@@ -9,8 +9,6 @@ import SceneView from '@geoscene/core/views/SceneView'
 
 import { onBeforeUnmount, onMounted } from 'vue'
 import labelPoint from '@/views/labelPoint/js/labelPoint.js'
-import Query from '@geoscene/core/rest/support/Query.js'
-import * as query from '@geoscene/core/rest/query.js'
 import * as three from 'three'
 import * as externalRenderers from '@geoscene/core/views/3d/externalRenderers'
 import texture1 from './img/tex_1.png';
