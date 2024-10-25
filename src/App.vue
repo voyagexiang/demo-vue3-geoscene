@@ -17,6 +17,7 @@ import { RouterLink, RouterView } from 'vue-router'
         <RouterLink to="/buildingEffect">建筑效果</RouterLink>
         <RouterLink to="/odline">道路ODLine</RouterLink>
         <RouterLink to="/labelPoint">点标注</RouterLink>
+        <RouterLink to="/cyclinderLayer">光圈</RouterLink>
       </nav>
     </div>
   </header>

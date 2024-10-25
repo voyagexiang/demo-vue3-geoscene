@@ -59,6 +59,11 @@ const router = createRouter({
       path: '/labelPoint',
       name: 'labelPoint',
       component: () => import('@/views/labelPoint/index.vue')
+    },
+    {
+      path: '/cyclinderLayer',
+      name: 'cyclinderLayer',
+      component: () => import('@/views/cyclinderLayer/index.vue')
     }
   ]
 })
