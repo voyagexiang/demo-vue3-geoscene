@@ -1,8 +1,7 @@
 <template>
-  <div class="mapdiv">
-    <div id="mapdiv" ref="mapdiv" class="mapdiv"></div>
-  </div>
+  <div id="viewDiv"></div>
 </template>
+
 
 <script setup>
 
@@ -19,8 +18,10 @@ import * as webgl from '@geoscene/core/views/3d/webgl.js'
 // import * as webgl from "@geoscene/core/views/3d/webgl.js";
 
 import * as externalRenderers from '@geoscene/core/views/3d/externalRenderers'
-import { MeshLine, MeshLineMaterial } from 'threejs-meshline'
+import { MeshLineGeometry as MeshLine, MeshLineMaterial } from 'meshline'
+
 import texture from '@/views/bufferLine/img/line.png'
+import RenderNode from '@geoscene/core/views/3d/webgl/RenderNode'
 
 window.THREE = three
 
@@ -31,7 +32,7 @@ onMounted(() => {
 
   const view = new SceneView({
     map: map,
-    container: 'mapdiv',
+    container: 'viewDiv',
     viewingMode: 'local',
     alphaCompositingEnabled: true,
     camera: {
@@ -42,27 +43,7 @@ onMounted(() => {
     }
 
   })
-
-  window.geosceneIn = {
-    view,
-    map
-  }
-
-  const extrudeLayerRender = new bufferLine(
-    {
-      view,
-      externalRenderers,
-      Query,
-      query,
-      MeshLine,
-      MeshLineMaterial,
-      queryUrl: 'https://gs3d.geosceneonline.cn/server/rest/services/Hosted/yanqing/FeatureServer/0',
-      width: 2000,
-      texture,
-      webgl
-    })
-  externalRenderers.add(view, extrudeLayerRender)
-
+  const extrudeLayerRender= RenderNode.createSubclass(bufferLine)
 
   view.when(function() {
     view.goTo({
@@ -78,16 +59,31 @@ onMounted(() => {
         }
       }
     })
+
+    new extrudeLayerRender(
+      {
+        view,
+        externalRenderers,
+        Query,
+        query,
+        MeshLine,
+        MeshLineMaterial,
+        queryUrl: 'https://gs3d.geosceneonline.cn/server/rest/services/Hosted/yanqing/FeatureServer/0',
+        width: 2000,
+        texture,
+        webgl
+      })
   })
 
 })
-
-onBeforeUnmount(() => {
-})
-
-
 </script>
 
 <style scoped>
-@import '../main.css';
+#viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+  width: 100%;
+}
 </style>
+<style src="../../../node_modules/@geoscene/core/assets/geoscene/themes/light/main.css" />
