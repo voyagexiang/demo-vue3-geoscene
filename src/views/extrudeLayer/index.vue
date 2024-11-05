@@ -1,23 +1,17 @@
 <template>
-  <div class="mapdiv">
-    <div id="mapdiv" ref="mapdiv" class="mapdiv"></div>
-  </div>
+  <div id="viewDiv"></div>
 </template>
-
 <script setup>
-
-
 import Map from '@geoscene/core/Map'
 import SceneView from '@geoscene/core/views/SceneView'
 
 import { onBeforeUnmount, onMounted } from 'vue'
-import ExtrudeLayer from '@/views/extrudeLayer/js/extrudeLayer.js'
+import extrudeLayer from '@/views/extrudeLayer/js/extrudeLayer.js'
 import Query from '@geoscene/core/rest/support/Query.js'
 import * as query from '@geoscene/core/rest/query.js'
 import * as three from 'three'
 import * as  webgl from '@geoscene/core/views/3d/webgl.js'
-
-import * as externalRenderers from '@geoscene/core/views/3d/externalRenderers';
+import RenderNode from '@geoscene/core/views/3d/webgl/RenderNode'
 
 window.THREE = three
 
@@ -27,8 +21,8 @@ onMounted(() => {
   })
 
   const view = new SceneView({
-    map: map,
-    container: 'mapdiv',
+    container: 'viewDiv',
+    map,
     viewingMode: 'local',
     alphaCompositingEnabled: true,
     camera: {
@@ -40,26 +34,7 @@ onMounted(() => {
 
   })
 
-  window.geosceneIn = {
-    view,
-    map
-  }
-
-  const extrudeLayerRender = new ExtrudeLayer({
-    view,
-    Query,
-    QueryTask: query,
-    queryUrl: 'https://gs3d.geosceneonline.cn/server/rest/services/Hosted/bjpolygon/FeatureServer/0',
-    interval: 100,
-    extrudeField: 'SHAPE__Length',
-    rgbArray: [255, 0, 0],//渲染颜色值
-    maxHeight: 5000,
-    minHeight: 600,
-    webgl,
-    externalRenderers: externalRenderers
-  })
-  externalRenderers.add(view, extrudeLayerRender)
-
+  let extrudeLayerRenderNode = RenderNode.createSubclass(extrudeLayer)
 
   view.when(function() {
     view.goTo({
@@ -74,16 +49,31 @@ onMounted(() => {
         }
       }
     })
+
+    new extrudeLayerRenderNode({
+      view,
+      Query,
+      QueryTask: query,
+      queryUrl: 'https://gs3d.geosceneonline.cn/server/rest/services/Hosted/bjpolygon/FeatureServer/0',
+      interval: 100,
+      extrudeField: 'SHAPE__Length',
+      rgbArray: [255, 0, 0],//渲染颜色值
+      maxHeight: 5000,
+      minHeight: 600,
+      webgl
+    })
+
   })
-
 })
-
-onBeforeUnmount(() => {
-})
-
 
 </script>
 
 <style scoped>
-@import '../main.css';
+#viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+  width: 100%;
+}
 </style>
+<style src="../../../node_modules/@geoscene/core/assets/geoscene/themes/light/main.css" />
