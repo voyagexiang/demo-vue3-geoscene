@@ -21,6 +21,7 @@ import { RouterLink, RouterView } from 'vue-router'
         <RouterLink to="/3dtiles">3dtiles</RouterLink>
         <RouterLink to="/scanningLight">动态扩扫描</RouterLink>
         <RouterLink to="/dynamicCircle">动态扩散圆</RouterLink>
+        <RouterLink to="/flyline">飞线</RouterLink>
       </nav>
     </div>
   </header>

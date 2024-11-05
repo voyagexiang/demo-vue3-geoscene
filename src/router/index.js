@@ -79,6 +79,11 @@ const router = createRouter({
       path: '/dynamicCircle',
       name: 'dynamicCircle',
       component: () => import('@/views/dynamicCircle/index.vue')
+    },
+    {
+      path: '/flyline',
+      name: 'flyline',
+      component: () => import('@/views/flyline/index.vue')
     }
   ]
 })
