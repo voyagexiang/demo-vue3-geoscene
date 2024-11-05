@@ -13,6 +13,8 @@ import * as three from 'three'
 import * as externalRenderers from '@geoscene/core/views/3d/externalRenderers'
 import texture1 from './img/tex_1.png';
 import texture2 from './img/billboard.png';
+import RenderNode from '@geoscene/core/views/3d/webgl/RenderNode.js'
+import * as webgl from "@geoscene/core/views/3d/webgl";
 
 window.THREE = three
 
@@ -39,25 +41,7 @@ onMounted(() => {
     view,
     map
   }
-
-  const extrudeLayerRender = new labelPoint({
-    view,
-    externalRenderers,
-    points: [
-      [13529536.50333642, 3626588.0048437016, 1000,1],//1-三角锥标注，2-精灵图标标注
-      [13493621.2254855, 3647407.029471413, 1000,1],
-      [13517475.44380141, 3652703.85109271, 1000,2]
-    ],
-    color_pyr:'#5588aa',
-    width_pyr: 1000,
-    height_pyr: 1500,
-    texture_pyr:texture1,
-    size_spr:[6000,3000,6000],
-    texture_spr:texture2
-
-  })
-  externalRenderers.add(view, extrudeLayerRender)
-
+  let labelPointRenderNode = RenderNode.createSubclass(labelPoint);
 
   view.when(function() {
     view.goTo({
@@ -73,13 +57,25 @@ onMounted(() => {
       },
       tilt: 51.78744026248896
     });
+    new labelPointRenderNode({
+      view,
+      points: [
+        [13529536.50333642, 3626588.0048437016, 1000,1],//1-三角锥标注，2-精灵图标标注
+        [13493621.2254855, 3647407.029471413, 1000,1],
+        [13517475.44380141, 3652703.85109271, 1000,2]
+      ],
+      color_pyr:'#5588aa',
+      width_pyr: 1000,
+      height_pyr: 1500,
+      texture_pyr:texture1,
+      size_spr:[6000,3000,6000],
+      texture_spr:texture2,
+      webgl
+
+    })
   })
 
 })
-
-onBeforeUnmount(() => {
-})
-
 
 </script>
 

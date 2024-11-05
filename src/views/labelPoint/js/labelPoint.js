@@ -2,7 +2,6 @@
  * @class
  * @anthor 蒋雪雪（email: jiangxx@geoscene.cn）
  * @param options {Object} 参数集
- * @param options.externalRenderers {Object} externalRenderers类
  *  @param options.color_pyr {String} rgb颜色值
  @param options.width_pyr = {Number} 锥体标注宽度
  @param options.height_pyr = {Number} 锥体标注高度
@@ -11,12 +10,10 @@
  @param options.texture_spr = {Object} 精灵图标
  *
  */
-class LabelPoint {
+let LabelPoint = {
   constructor(options) {
     this.opts = {
-      externalRenderers: null
     }
-    this.opts.externalRenderers = options.externalRenderers
     this.view = options.view
     this.points = options.points || [[0, 0, 0, 1]]
     this.color = options.color_pyr || '#5588aa'
@@ -28,23 +25,24 @@ class LabelPoint {
     this.renderObjects = []
     this.isUp = true
     this.distance = 0
-  }
+    this._camera = null
+    this.webgl = options.webgl;
+
+  },
 
   /**
    * 渲染器初始化
    * @memberof LabelPoint
    * @method setup
-   * @param {Object} context 已有渲染器信息，无需传值
    */
-  setup(context) {
+  initialize() {
     const THREE = window.THREE
     this.renderer = new THREE.WebGLRenderer({
-      context: context.gl, // 可用于将渲染器附加到已有的渲染环境(RenderingContext)中
+      context: this.gl, // 可用于将渲染器附加到已有的渲染环境(RenderingContext)中
       premultipliedAlpha: false // renderer是否假设颜色有 premultiplied alpha. 默认为true
     })
     this.renderer.setPixelRatio(window.devicePixelRatio) // 设置设备像素比。通常用于避免HiDPI设备上绘图模糊
     this.renderer.setViewport(0, 0, this.view.width, this.view.height) // 视口大小设置
-    // this.renderer.setSize(context.camera.fullWidth, context.camera.fullHeight);
 
     // Make sure it does not clear anything before rendering
     this.renderer.autoClear = false
@@ -59,14 +57,14 @@ class LabelPoint {
     this.renderer.setRenderTarget = function(target) {
       originalSetRenderTarget(target)
       if (target == null) {
-        context.bindRenderTarget()
+        this.bindRenderTarget()
       }
     }
 
     this.scene = new THREE.Scene()
     // setup the camera
-    let cam = context.camera
-    this.camera = new THREE.PerspectiveCamera(cam.fovY, cam.aspect, cam.near, cam.far)
+    let cam = this.camera
+    this._camera = new THREE.PerspectiveCamera(cam.fovY, cam.aspect, cam.near, cam.far)
 
 
     // 添加坐标轴辅助工具
@@ -81,29 +79,28 @@ class LabelPoint {
     this.sun.position.set(-600, 300, 60000)
     this.scene.add(this.sun)
 
-    this.getGeometry(context)
-    context.resetWebGLState()
-  }
+    this.getGeometry()
+    this.resetWebGLState()
+  },
 
   /**
    * 渲染器更新渲染
    * @memberof LabelPoint
    * @method render
-   * @param {Object} context 已有渲染器信息，无需传值
    */
-  render(context) {
+  render() {
     const THREE = window.THREE
-    let cam = context.camera
+    let cam = this.camera
     //需要调整相机的视角
-    this.camera.position.set(cam.eye[0], cam.eye[1], cam.eye[2])
-    this.camera.up.set(cam.up[0], cam.up[1], cam.up[2])
-    this.camera.lookAt(new THREE.Vector3(cam.center[0], cam.center[1], cam.center[2]))
+    this._camera.position.set(cam.eye[0], cam.eye[1], cam.eye[2])
+    this._camera.up.set(cam.up[0], cam.up[1], cam.up[2])
+    this._camera.lookAt(new THREE.Vector3(cam.center[0], cam.center[1], cam.center[2]))
     // Projection matrix can be copied directly
-    this.camera.projectionMatrix.fromArray(cam.projectionMatrix)
+    this._camera.projectionMatrix.fromArray(cam.projectionMatrix)
     // update lighting
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     // view.environment.lighting.date = Date.now();
-    let l = context.sunLight
+    let l = this.sunLight
     this.sun.position.set(l.direction[0], l.direction[1], l.direction[2])
     this.sun.intensity = l.diffuse.intensity
     this.sun.color = new THREE.Color(l.diffuse.color[0], l.diffuse.color[1], l.diffuse.color[2])
@@ -139,12 +136,13 @@ class LabelPoint {
     // draw the scene
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     this.renderer.state.reset()
-    this.renderer.render(this.scene, this.camera)
+    this.bindRenderTarget();
+    this.renderer.render(this.scene, this._camera)
     // as we want to smoothly animate the ISS movement, immediately request a re-render
-    this.opts.externalRenderers.requestRender(this.view)
+    this.requestRender(this.view)
     // cleanup
-    context.resetWebGLState()
-  }
+    this.resetWebGLState()
+  },
 
   /**
    * 创建几何点
@@ -156,9 +154,9 @@ class LabelPoint {
     let _self = this
     this.points.forEach(function(position) {
       let cenP = []
-      _self.opts.externalRenderers.toRenderCoordinates(_self.view, [position[0], position[1], position[2]], 0, _self.view.spatialReference, cenP, 0, 1)
+      _self.webgl.toRenderCoordinates(_self.view, [position[0], position[1], position[2]], 0, _self.view.spatialReference, cenP, 0, 1)
       if (position[3] && position[3] === 1) {
-        let geometry = new THREE.CylinderBufferGeometry(_self.width_pyr, 0, _self.height_pyr, 4)
+        let geometry = new THREE.CylinderGeometry(_self.width_pyr, 0, _self.height_pyr, 4)
         geometry.rotateX(Math.PI / 2)
         geometry.computeBoundingSphere()
         let object3D = new THREE.Object3D()
@@ -176,7 +174,7 @@ class LabelPoint {
         _self.scene.add(sprite)
       }
     })
-  }
+  },
 
   /**
    * 构建渲染材质
@@ -203,7 +201,7 @@ class LabelPoint {
       side: THREE.DoubleSide
     })
     return material
-  }
+  },
 
   /**
    * 构建渲染Shader
