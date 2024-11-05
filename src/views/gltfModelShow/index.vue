@@ -9,23 +9,27 @@ import PopupTemplate from '@geoscene/core/PopupTemplate.js'
 import DynamicComponent from '../mapPopup/one/DynamicComponent.vue'
 import { createApp } from 'vue'
 import DynamicGLTFAPI from '@/views/gltfModelShow/dynamicGltf.js'
-import * as externalRenderers from '@geoscene/core/views/3d/externalRenderers';
 
-import Map from '@geoscene/core/Map';
-import SceneView from '@geoscene/core/views/SceneView';
+import Map from '@geoscene/core/Map'
+import SceneView from '@geoscene/core/views/SceneView'
+import RenderNode from '@geoscene/core/views/3d/webgl/RenderNode'
+import * as webgl from '@geoscene/core/views/3d/webgl'
 
 export default {
   name: 'App',
   components: {},
   async mounted() {
     let map = new Map({
-      basemap:"tianditu-image",
+      basemap: 'tianditu-image'
     })
     let view = new SceneView({
       map: map,
       container: this.$el,
-      viewingMode: "local"
-    });
+      viewingMode: 'local'
+    })
+    let dynamicGLTFRender = null
+    let DynamicGLTFAPIRenderNode = RenderNode.createSubclass(DynamicGLTFAPI)
+
     view.when(function() {
       view.goTo({
         fov: 55,
@@ -40,22 +44,19 @@ export default {
         },
         tilt: 69.0179407311609
       })
+      dynamicGLTFRender = new DynamicGLTFAPIRenderNode({
+        view,
+        webgl
+      })
+
     })
-
-
-    const dynamicGLTFRender = new DynamicGLTFAPI({
-      view,
-      externalRenderers
-    })
-    externalRenderers.add(view, dynamicGLTFRender)
-
 
 
     view.on('click', async function(event) {
       console.log(view.camera)
-      var hit = await view.hitTest(event);
-      console.log("===========hit", hit);
-      dynamicGLTFRender.updatePosition([hit.ground.mapPoint.x, hit.ground.mapPoint.y,hit.ground.mapPoint.z+2000]);
+      var hit = await view.hitTest(event)
+      console.log('===========hit', hit)
+      dynamicGLTFRender.updatePosition([hit.ground.mapPoint.x, hit.ground.mapPoint.y, hit.ground.mapPoint.z + 2000])
     })
 
     const template = new PopupTemplate({
