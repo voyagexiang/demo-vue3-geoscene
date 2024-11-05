@@ -1,5 +1,5 @@
 <template>
-  <div id="mapdiv" ref="mapdiv" class="mapdiv"></div>
+  <div id="viewDiv"></div>
 </template>
 
 <script setup>
@@ -12,18 +12,24 @@ import odLine from '@/views/ODLine/js/odLine.js'
 import Query from '@geoscene/core/rest/support/Query.js'
 import * as query from '@geoscene/core/rest/query.js'
 import * as three from 'three'
+import * as  webgl from '@geoscene/core/views/3d/webgl.js'
+
 import * as externalRenderers from '@geoscene/core/views/3d/externalRenderers'
+import RenderNode from '@geoscene/core/views/3d/webgl/RenderNode.js'
+import texture0 from '@/assets/material/tex_0.png'
+import texture1 from '@/assets/material/tex_1.png'
 
 window.THREE = three
 
 onMounted(() => {
+
   const map = new Map({
     basemap: 'tianditu-image'
   })
 
   const view = new SceneView({
-    map: map,
-    container: 'mapdiv',
+    container: 'viewDiv',
+    map,
     viewingMode: 'local',
     alphaCompositingEnabled: true,
     camera: {
@@ -34,26 +40,7 @@ onMounted(() => {
     }
 
   })
-
-  window.geosceneIn = {
-    view,
-    map
-  }
-
-  const extrudeLayerRender = new odLine({
-    view,
-    externalRenderers,
-    Query,
-    QueryTask: query,
-    queryUrl: 'https://gs3d.geosceneonline.cn/server/rest/services/Hosted/rLine/FeatureServer/0',
-    color: '#f1c232',
-    size: 3,//宽度
-    length: 0.2,//<1
-    speed: 0.8,//<1
-    isShow: true//是否可见道路线
-  })
-  externalRenderers.add(view, extrudeLayerRender)
-
+  let odLineRenderNode = RenderNode.createSubclass(odLine)
 
   view.when(function() {
     view.goTo({
@@ -69,16 +56,32 @@ onMounted(() => {
       },
       tilt: 62.46796754204343
     })
+
+    new odLineRenderNode({
+      view,
+      externalRenderers,
+      Query,
+      QueryTask: query,
+      queryUrl: 'https://gs3d.geosceneonline.cn/server/rest/services/Hosted/rLine/FeatureServer/0',
+      color: '#f1c232',
+      size: 3,//宽度
+      length: 0.2,//<1
+      speed: 0.8,//<1
+      isShow: true,//是否可见道路线
+      webgl
+    })
+
   })
 
 })
-
-onBeforeUnmount(() => {
-})
-
-
 </script>
 
 <style scoped>
-@import '../main.css';
+#viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+  width: 100%;
+}
 </style>
+<style src="../../../node_modules/@geoscene/core/assets/geoscene/themes/light/main.css" />
