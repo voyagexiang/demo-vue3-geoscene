@@ -1,29 +1,26 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import gltfpath from '@/assets/datas/Flamingo.glb'
 import horseGLTF from '@/assets/datas/Horse.glb'
-import * as three from 'three'
+import * as THREE from 'three'
 
-class DynamicGLTFAPI {
+
+let DynamicGLTFAPI = {
   constructor(options) {
-    this.opts = {
-      externalRenderers: null
-    }
-    this.opts.externalRenderers = options.externalRenderers
+    this.opts = {}
     this.view = options.view
-    this.mixer = null
     this.horseMixer = null
-    this.clock = null
     this.horseClock = null
     this.gltfMesh = null
-  }
+    this._camera = null
+    this.webgl = options.webgl
+  },
 
   setParams() {
     this.isStop = !this.isStop
-  }
+  },
 
   clearMesh() {
     this.scene.remove(this.gltfMesh.scene)
-  }
+  },
 
   updatePosition() {
     // {
@@ -45,18 +42,11 @@ class DynamicGLTFAPI {
       }
     }
 
-  }
+  },
 
-  setup(context) {
-    let THREE = three
-    // this.mixer = new THREE.AnimationMixer();
-    this.horseMixer = THREE.AnimationMixer
-    this.clock = new THREE.Clock()
-    this.horseClock = new THREE.Clock()
-    this.mixer = THREE.AnimationMixer
-
+  initialize() {
     this.renderer = new THREE.WebGLRenderer({
-      context: context.gl, // 可用于将渲染器附加到已有的渲染环境(RenderingContext)中
+      context: this.gl, // 可用于将渲染器附加到已有的渲染环境中
       premultipliedAlpha: false // renderer是否假设颜色有 premultiplied alpha. 默认为true
     })
     this.renderer.setPixelRatio(window.devicePixelRatio) // 设置设备像素比。通常用于避免HiDPI设备上绘图模糊
@@ -65,20 +55,19 @@ class DynamicGLTFAPI {
     this.renderer.autoClear = false
     this.renderer.autoClearDepth = false
     this.renderer.autoClearColor = false
-    // this.renderer.autoClearStencil = false;
 
     let originalSetRenderTarget = this.renderer.setRenderTarget.bind(this.renderer)
     this.renderer.setRenderTarget = function(target) {
       originalSetRenderTarget(target)
-      if (target == null) {
-        context.bindRenderTarget()
+      if (target === null) {
+        this.bindRenderTarget()
       }
     }
 
     this.scene = new THREE.Scene()
     // setup the camera
-    let cam = context.camera
-    this.camera = new THREE.PerspectiveCamera(cam.fovY, cam.aspect, cam.near, cam.far)
+    let cam = this.camera
+    this._camera = new THREE.PerspectiveCamera(cam.fovY, cam.aspect, cam.near, cam.far)
 
     // 添加坐标轴辅助工具
     const axesHelper = new THREE.AxesHelper(1)
@@ -91,31 +80,20 @@ class DynamicGLTFAPI {
     // setup scene lighting
     this.ambient = new THREE.AmbientLight(0xffffff, 0.5)
     this.scene.add(this.ambient)
+    this.sun = new THREE.DirectionalLight(0xffffff, 0.5)
+    this.sun.position.set(-600, 300, 60000)
+    this.scene.add(this.sun)
 
-    // const loader = new GLTFLoader().setPath('./');
+
+    this.horseMixer = THREE.AnimationMixer
+    this.horseClock = new THREE.Clock()
+
     const loader = new GLTFLoader()
     let that = this
-    // loader.load('Cesium_Man.glb', function (gltf) {
-    loader.load(gltfpath, function(gltf) {
-      console.log('gltf', gltf)
-      that.gltfMesh = gltf
-      gltf.scene.scale.set(10, 10, 10)
-      that.scene.add(gltf.scene)
-      gltf.scene.position.set(12948718.594467826, 4852521.989441685, 2500)
-      gltf.scene.rotateX(Math.PI / 2)
-
-      that.mixer = new THREE.AnimationMixer(gltf.scene)
-      // obj.animations[0]：获得剪辑对象clip
-      var AnimationAction = that.mixer.clipAction(gltf.animations[0])
-      // AnimationAction.timeScale = 1; //默认1，可以调节播放速度
-      // AnimationAction.loop = THREE.LoopOnce; //不循环播放
-      // AnimationAction.clampWhenFinished = true;//暂停在最后一帧播放的状态
-      AnimationAction.play()//播放动画
-    })
-
     loader.load(horseGLTF, function(gltf) {
       console.log('gltf', gltf)
-      gltf.scene.scale.set(5, 5, 5)
+      that.gltfMesh = gltf
+      gltf.scene.scale.set(2, 2, 2)
       that.scene.add(gltf.scene)
       gltf.scene.position.set(12948718.594467826, 4852521.989441685, 0)
       gltf.scene.rotateX(Math.PI / 2)
@@ -129,52 +107,51 @@ class DynamicGLTFAPI {
       AnimationAction.play()//播放动画
     })
 
-
-    // this.getCoords(context);
-    context.resetWebGLState()
-  }
+    this.resetWebGLState()
+  },
 
   /**
    * 渲染器更新渲染
    * @memberof BuildingEffect
    * @method render
-   * @param {Object} context 已有渲染器信息，无需传值
    */
-  render(context) {
-    let THREE = three
-    let cam = context.camera
+  render() {
+    let cam = this.camera
     //需要调整相机的视角
-    this.camera.position.set(cam.eye[0], cam.eye[1], cam.eye[2])
-    this.camera.up.set(cam.up[0], cam.up[1], cam.up[2])
-    this.camera.lookAt(new THREE.Vector3(cam.center[0], cam.center[1], cam.center[2]))
+    this._camera.position.set(cam.eye[0], cam.eye[1], cam.eye[2])
+    this._camera.up.set(cam.up[0], cam.up[1], cam.up[2])
+    this._camera.lookAt(new THREE.Vector3(cam.center[0], cam.center[1], cam.center[2]))
     // Projection matrix can be copied directly
-    this.camera.projectionMatrix.fromArray(cam.projectionMatrix)
+    this._camera.projectionMatrix.fromArray(cam.projectionMatrix)
     // update lighting
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     // view.environment.lighting.date = Date.now();
-
-
-    if (this.mixer) {
-      // 更新混合器相关的时间, clock.getDelta()方法获得两帧的时间间隔
-      this.mixer.update(this.clock.getDelta())
-    }
-
-    if (this.horseMixer) {
-      this.horseMixer.update(this.horseClock.getDelta())
-    }
+    let l = this.sunLight
+    this.sun.position.set(
+      l.direction[0],
+      l.direction[1],
+      l.direction[2]
+    )
+    this.sun.intensity = l.diffuse.intensity
+    this.sun.color = new THREE.Color(l.diffuse.color[0], l.diffuse.color[1], l.diffuse.color[2])
+    this.ambient.intensity = l.ambient.intensity
+    this.ambient.color = new THREE.Color(l.ambient.color[0], l.ambient.color[1], l.ambient.color[2])
 
     // draw the scene
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     // this.renderer.resetGLState();
     this.renderer.state.reset()
+    this.bindRenderTarget()
 
-    this.renderer.render(this.scene, this.camera)
+    this.renderer.render(this.scene, this._camera)
     // as we want to smoothly animate the ISS movement, immediately request a re-render
-    this.opts.externalRenderers.requestRender(this.view)
+    this.requestRender(this.view)
 
-
+    if (this.horseMixer) {
+      this.horseMixer.update(this.horseClock.getDelta())
+    }
     // cleanup
-    context.resetWebGLState()
+    this.resetWebGLState()
   }
 
 }

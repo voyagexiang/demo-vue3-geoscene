@@ -73,7 +73,7 @@ export default class MoveCar {
             x: x2,
             y: y2
           },
-          height: 1000, // 设置的模型高度视觉变量的属性值
+          height: 10, // 设置的模型高度视觉变量的属性值
           heading: angle, // 设置模型水平旋转视觉变量的属性值
           angleCount: angleCount
         })
@@ -100,7 +100,7 @@ export default class MoveCar {
       // 图层刷新
       callback({
         carPoint: that.carPoint,
-        height: 1000, // 设置的模型高度视觉变量的属性值
+        height: 10, // 设置的模型高度视觉变量的属性值
         heading: angle, // 设置模型水平旋转视觉变量的属性值
         angleCount: angleCount
 

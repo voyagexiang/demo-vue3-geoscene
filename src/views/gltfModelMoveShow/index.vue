@@ -1,6 +1,5 @@
 <template>
-  <div class="mapdiv">
-    <div class="mapdiv" id="viewDiv"></div>
+  <div id="viewDiv">
     <div id="btnDiv">
       <el-button @click="addPath">添加路径</el-button>
       <el-button @click="startMove">开始路径渲染</el-button>
@@ -8,20 +7,20 @@
       <el-button @click="clearMove">清除径渲染</el-button>
     </div>
   </div>
-
 </template>
 
 <script setup>
 
 import { onMounted } from 'vue'
 import DynamicGLTFAPI from '@/views/gltfModelMoveShow/dynamicGltf.js'
-import * as externalRenderers from '@geoscene/core/views/3d/externalRenderers'
 
 import Map from '@geoscene/core/Map'
 import SceneView from '@geoscene/core/views/SceneView'
 import MoveCar from '@/views/gltfModelMoveShow/index.js'
 import Polyline from '@geoscene/core/geometry/Polyline.js'
 import Graphic from '@geoscene/core/Graphic.js'
+import RenderNode from '@geoscene/core/views/3d/webgl/RenderNode.js'
+import * as  webgl from '@geoscene/core/views/3d/webgl.js'
 
 const points = [
   [12951326.493237052, 4853952.086447924],
@@ -42,7 +41,11 @@ onMounted(() => {
       container: 'viewDiv',
       viewingMode: 'local'
     })
-    view.when(function() {
+
+  let DynamicGLTFAPIRenderNode = RenderNode.createSubclass(DynamicGLTFAPI)
+
+
+  view.when(function() {
       view.goTo({
         fov: 55,
         heading: 55.99495193816657,
@@ -56,11 +59,12 @@ onMounted(() => {
         },
         tilt: 69.0179407311609
       })
-      dynamicGLTFRender = new DynamicGLTFAPI({
+      dynamicGLTFRender = new DynamicGLTFAPIRenderNode({
         view,
-        externalRenderers
+         webgl
+
       })
-      externalRenderers.add(view, dynamicGLTFRender)
+      // externalRenderers.add(view, dynamicGLTFRender)
       let updatePosition = dynamicGLTFRender.updatePosition()
 
       movecar = new MoveCar(
@@ -78,7 +82,7 @@ onMounted(() => {
       // dynamicGLTFRender.updatePosition([hit.ground.mapPoint.x, hit.ground.mapPoint.y, hit.ground.mapPoint.z + 2000])
       dynamicGLTFRender.updatePosition(
         {
-          carPoint: [hit.ground.mapPoint.x, hit.ground.mapPoint.y, hit.ground.mapPoint.z + 2000],
+          carPoint: [hit.ground.mapPoint.x, hit.ground.mapPoint.y, hit.ground.mapPoint.z],
           height: 10, // 设置的模型高度视觉变量的属性值
           heading: Math.PI / 2 // 设置模型水平旋转视觉变量的属性值
         }
@@ -116,7 +120,7 @@ function addPath() {
 
 function startMove() {
   dynamicGLTFRender.scene.add(dynamicGLTFRender.gltfMesh.scene)
-  let AnimationAction = dynamicGLTFRender.mixer.clipAction(dynamicGLTFRender.gltfMesh.animations[0])
+  let AnimationAction = dynamicGLTFRender.horseMixer.clipAction(dynamicGLTFRender.gltfMesh.animations[0])
   AnimationAction.play()//播放动画
 
   movecar.startExecute()
@@ -133,11 +137,18 @@ function clearMove() {
 </script>
 
 <style scoped>
-@import '../main.css';
 
 #btnDiv {
   position: absolute;
   top: 20px;
   right: 60px;
 }
+
+#viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+  width: 100%;
+}
 </style>
+<style src="../../../node_modules/@geoscene/core/assets/geoscene/themes/light/main.css" />
