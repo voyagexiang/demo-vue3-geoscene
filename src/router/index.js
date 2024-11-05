@@ -74,6 +74,11 @@ const router = createRouter({
       path: '/scanningLight',
       name: 'scanningLight',
       component: () => import('@/views/scanningLight/index.vue')
+    },
+    {
+      path: '/dynamicCircle',
+      name: 'dynamicCircle',
+      component: () => import('@/views/dynamicCircle/index.vue')
     }
   ]
 })
