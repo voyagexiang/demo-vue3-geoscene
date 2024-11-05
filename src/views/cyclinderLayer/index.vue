@@ -9,11 +9,11 @@ import SceneView from '@geoscene/core/views/SceneView'
 
 import { onBeforeUnmount, onMounted } from 'vue'
 import * as three from 'three'
-import * as externalRenderers from '@geoscene/core/views/3d/externalRenderers'
 import texture from '@/views/cyclinderLayer/img/tex_1.png'
 import * as webgl from '@geoscene/core/views/3d/webgl.js'
 import cylinderLayer from '@/views/cyclinderLayer/js/cylinderLayer.js'
 import IntegratedMeshLayer from '@geoscene/core/layers/IntegratedMeshLayer.js'
+import RenderNode from '@geoscene/core/views/3d/webgl/RenderNode.js'
 
 window.THREE = three
 
@@ -33,19 +33,7 @@ onMounted(() => {
     container: 'mapdiv',
     viewingMode: 'local'
   })
-
-  const cylinderLayerRender = new cylinderLayer({
-    view,
-    position: [12713244.08627044,2552797.5531978905,89.50873601809144],
-    radius: 70,
-    height: 20,
-    scale: 5,
-    texture: texture,
-    webgl,
-    externalRenderers
-  })
-  externalRenderers.add(view, cylinderLayerRender)
-
+  let cylinderLayerRenderNode = RenderNode.createSubclass(cylinderLayer);
 
   view.when(function() {
     view.goTo({
@@ -61,6 +49,15 @@ onMounted(() => {
       },
       tilt: 62.7480405896
     });
+    new cylinderLayerRenderNode({
+      view,
+      position: [12713244.08627044,2552797.5531978905,89.50873601809144],
+      radius: 70,
+      height: 20,
+      scale: 5,
+      texture: texture,
+      webgl,
+    })
   })
 
 })

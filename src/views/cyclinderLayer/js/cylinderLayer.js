@@ -2,7 +2,6 @@
  * @class
  * @anthor 蒋雪雪（email: jiangxx@geoscene.cn）
  * @param options {Object} 参数集
- * @param options.externalRenderers {Object} externalRenderers类
  *  @param options.position {String} 柱体位置
  *  @param options.radius = {Number} 柱体半径
  *  @param options.scale = {Number} 扩散比例
@@ -10,12 +9,10 @@
  *  @param options.texture = {Object} 渐变贴图
  * 
  */
-class CylinderLayer {
+let CylinderLayer = {
     constructor(options) {
         this.opts = {
-            externalRenderers: null,
         }
-        this.opts.externalRenderers = options.externalRenderers;
         this.view = options.view;
         this.position = options.position || [0, 0, 0];
         this.radius = options.radius || 7000;
@@ -23,22 +20,23 @@ class CylinderLayer {
         this.height = options.height || 5000;
         this.texture = options.texture || null;
         this.renderObject = null;
-    }
+        this._camera = null
+        this.webgl = options.webgl;
+
+    },
     /**
      * 渲染器初始化
      * @memberof CylinderLayer
      * @method setup
-     * @param {Object} context 已有渲染器信息，无需传值
      */
-    setup(context) {
+    initialize() {
         const THREE = window.THREE;
         this.renderer = new THREE.WebGLRenderer({
-            context: context.gl, // 可用于将渲染器附加到已有的渲染环境(RenderingContext)中
+            context: this.gl, // 可用于将渲染器附加到已有的渲染环境中
             premultipliedAlpha: false, // renderer是否假设颜色有 premultiplied alpha. 默认为true
         });
         this.renderer.setPixelRatio(window.devicePixelRatio); // 设置设备像素比。通常用于避免HiDPI设备上绘图模糊
         this.renderer.setViewport(0, 0, this.view.width, this.view.height); // 视口大小设置
-        // this.renderer.setSize(context.camera.fullWidth, context.camera.fullHeight);
 
         // Make sure it does not clear anything before rendering
         this.renderer.autoClear = false;
@@ -53,14 +51,14 @@ class CylinderLayer {
         this.renderer.setRenderTarget = function (target) {
             originalSetRenderTarget(target);
             if (target == null) {
-                context.bindRenderTarget();
+                this.bindRenderTarget();
             }
         };
 
         this.scene = new THREE.Scene();
         // setup the camera
-        let cam = context.camera;
-        this.camera = new THREE.PerspectiveCamera(cam.fovY, cam.aspect, cam.near, cam.far);
+        let cam = this.camera;
+        this._camera = new THREE.PerspectiveCamera(cam.fovY, cam.aspect, cam.near, cam.far);
 
 
         // 添加坐标轴辅助工具
@@ -75,28 +73,27 @@ class CylinderLayer {
         this.sun.position.set(-600, 300, 60000);
         this.scene.add(this.sun);
 
-        this.getGeometry(context);
-        context.resetWebGLState();
-    }
+        this.getGeometry();
+        this.resetWebGLState();
+    },
     /**
      * 渲染器更新渲染
      * @memberof CylinderLayer
      * @method render
-     * @param {Object} context 已有渲染器信息，无需传值
      */
-    render(context) {
+    render() {
         const THREE = window.THREE;
-        let cam = context.camera;
+        let cam = this.camera;
         //需要调整相机的视角
-        this.camera.position.set(cam.eye[0], cam.eye[1], cam.eye[2]);
-        this.camera.up.set(cam.up[0], cam.up[1], cam.up[2]);
-        this.camera.lookAt(new THREE.Vector3(cam.center[0], cam.center[1], cam.center[2]));
+        this._camera.position.set(cam.eye[0], cam.eye[1], cam.eye[2]);
+        this._camera.up.set(cam.up[0], cam.up[1], cam.up[2]);
+        this._camera.lookAt(new THREE.Vector3(cam.center[0], cam.center[1], cam.center[2]));
         // Projection matrix can be copied directly
-        this.camera.projectionMatrix.fromArray(cam.projectionMatrix);
+        this._camera.projectionMatrix.fromArray(cam.projectionMatrix);
         // update lighting
         /////////////////////////////////////////////////////////////////////////////////////////////////////
         // view.environment.lighting.date = Date.now();
-        let l = context.sunLight;
+        let l = this.sunLight;
         this.sun.position.set(
             l.direction[0],
             l.direction[1],
@@ -119,12 +116,14 @@ class CylinderLayer {
         // draw the scene
         /////////////////////////////////////////////////////////////////////////////////////////////////////
         this.renderer.state.reset();
-        this.renderer.render(this.scene, this.camera);
+        this.bindRenderTarget();
+
+        this.renderer.render(this.scene, this._camera);
         // as we want to smoothly animate the ISS movement, immediately request a re-render
-        this.opts.externalRenderers.requestRender(this.view);
+        this.requestRender(this.view);
         // cleanup
-        context.resetWebGLState();
-    }
+        this.resetWebGLState();
+    },
     /**
      * 创建几何
      * @memberof CylinderLayer
@@ -146,10 +145,10 @@ class CylinderLayer {
         this.renderObject = this.transparentObject(geo, material);
         this.renderObject.rotateX(Math.PI / 2);
         var cenP = [];
-        this.opts.externalRenderers.toRenderCoordinates(this.view, this.position, 0, this.view.spatialReference, cenP, 0, 1);
+        this.webgl.toRenderCoordinates(this.view, this.position, 0, this.view.spatialReference, cenP, 0, 1);
         this.renderObject.position.set(cenP[0], cenP[1], cenP[2]);
         this.scene.add(this.renderObject);
-    }
+    },
     /**
       * 构建Object3D
       * @memberof CylinderLayer
