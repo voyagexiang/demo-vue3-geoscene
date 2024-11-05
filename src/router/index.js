@@ -64,6 +64,11 @@ const router = createRouter({
       path: '/cyclinderLayer',
       name: 'cyclinderLayer',
       component: () => import('@/views/cyclinderLayer/index.vue')
+    },
+    {
+      path: '/3dtiles',
+      name: '3dtiles',
+      component: () => import('@/views/3dtiles/index.vue')
     }
   ]
 })
