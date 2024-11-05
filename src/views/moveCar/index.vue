@@ -65,8 +65,6 @@ onMounted(() => {
   )
 })
 
-onBeforeUnmount(() => {
-})
 
 function addPath() {
   const path = new Polyline({
@@ -105,8 +103,15 @@ function clearMove() {
 </script>
 
 <style scoped>
-@import '../main.css';
-#btnDiv{
+@import 'https://js.geoscene.cn/4.29/@geoscene/core/assets/geoscene/themes/light/main.css';
+
+html,
+body,
+.mapdiv {
+  height: 98vh;
+}
+
+#btnDiv {
   position: absolute;
   top: 20px;
   right: 60px;
