@@ -19,6 +19,7 @@ import { RouterLink, RouterView } from 'vue-router'
         <RouterLink to="/labelPoint">点标注</RouterLink>
         <RouterLink to="/cyclinderLayer">光圈</RouterLink>
         <RouterLink to="/3dtiles">3dtiles</RouterLink>
+        <RouterLink to="/scanningLight">3dtiles</RouterLink>
       </nav>
     </div>
   </header>

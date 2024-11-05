@@ -14,6 +14,8 @@
     "@element-plus/icons-vue": "^2.0.9",
     "@geoscene/core": "^4.29.8",
     "3d-tiles-renderer": "^0.3.40",
+    "dat.gui": "^0.7.9",
+
     "element-plus": "^2.7.6",
     "pinia": "^2.1.7",
     "meshline": "^3.3.1",

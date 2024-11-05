@@ -69,6 +69,11 @@ const router = createRouter({
       path: '/3dtiles',
       name: '3dtiles',
       component: () => import('@/views/3dtiles/index.vue')
+    },
+    {
+      path: '/scanningLight',
+      name: 'scanningLight',
+      component: () => import('@/views/scanningLight/index.vue')
     }
   ]
 })
