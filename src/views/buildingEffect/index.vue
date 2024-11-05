@@ -1,63 +1,35 @@
 <template>
-  <div id="mapdiv" ref="mapdiv" class="mapdiv"></div>
+  <div id="viewDiv"></div>
 </template>
 
 <script setup>
-
-
+import { onMounted, ref } from 'vue'
 import Map from '@geoscene/core/Map'
 import SceneView from '@geoscene/core/views/SceneView'
-
-import { onBeforeUnmount, onMounted } from 'vue'
-import buildingEffect from '@/views/buildingEffect/js/buildingEffect.js'
-import Query from '@geoscene/core/rest/support/Query.js'
-import * as query from '@geoscene/core/rest/query.js'
-import * as three from 'three'
-import * as webgl from '@geoscene/core/views/3d/webgl.js'
-import * as externalRenderers from '@geoscene/core/views/3d/externalRenderers'
-import texture0 from '@/views/buildingEffect/img/tex_0.png'
-import texture1 from '@/views/buildingEffect/img/tex_1.png'
-
-window.THREE = three
+import Query from '@geoscene/core/rest/support/Query'
+import * as query from '@geoscene/core/rest/query'
+import * as webgl from '@geoscene/core/views/3d/webgl'
+import RenderNode from '@geoscene/core/views/3d/webgl/RenderNode'
+import buildingEffect from './js/buildingEffect.js'
+import texture0 from '@/assets/material/tex_0.png'
+import texture1 from '@/assets/material/tex_1.png'
 
 onMounted(() => {
-  const map = new Map({
-    basemap: 'tianditu-image'
+  initMap()
+})
+
+const initMap = () => {
+  let map = new Map({
+    basemap: 'tianditu-vector'
   })
 
-  const view = new SceneView({
-    map: map,
-    container: 'mapdiv',
-    viewingMode: 'local',
-    alphaCompositingEnabled: true,
-    camera: {
-      position: [116.34987559660293, 40, 2268.2247062232345],
-      heading: 27.823889801786425,
-      tilt: 63.10242206294739,
-      fov: 55
-    }
-
+  let view = new SceneView({
+    container: 'viewDiv',
+    map,
+    viewingMode: 'local'
   })
 
-  window.geosceneIn = {
-    view,
-    map
-  }
-
-  const extrudeLayerRender = new buildingEffect({
-    view,
-    externalRenderers,
-    Query,
-    QueryTask: query,
-    queryUrl: 'https://gs3d.geosceneonline.cn/server/rest/services/Hosted/buildingOutline/FeatureServer/0',
-    height: 100,
-    texture0,
-    texture1,
-    webgl
-  })
-  externalRenderers.add(view, extrudeLayerRender)
-
-
+  let buildingEffectRenderNode = RenderNode.createSubclass(buildingEffect)
   view.when(function() {
     view.goTo({
       fov: 55,
@@ -72,16 +44,27 @@ onMounted(() => {
       },
       tilt: 61.305047335171494
     })
+
+    new buildingEffectRenderNode({
+      view,
+      Query,
+      QueryTask: query,
+      queryUrl: 'https://gs3d.geosceneonline.cn/server/rest/services/Hosted/buildingOutline/FeatureServer/0',
+      height: 200,
+      texture0,
+      texture1,
+      webgl
+    })
   })
-
-})
-
-onBeforeUnmount(() => {
-})
-
-
+}
 </script>
 
 <style scoped>
-@import '../main.css';
+#viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+  width: 100%;
+}
 </style>
+<style src="../../../node_modules/@geoscene/core/assets/geoscene/themes/light/main.css" />
