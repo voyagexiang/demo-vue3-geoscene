@@ -89,6 +89,11 @@ const router = createRouter({
       path: '/flashWall',
       name: 'flashWall',
       component: () => import('@/views/flashWall/index.vue')
+    },
+    {
+      path: '/flashLine',
+      name: 'flashLine',
+      component: () => import('@/views/flashLine/index.vue')
     }
   ]
 })

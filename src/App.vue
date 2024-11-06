@@ -23,6 +23,7 @@ import { RouterLink, RouterView } from 'vue-router'
         <RouterLink to="/dynamicCircle">动态扩散圆</RouterLink>
         <RouterLink to="/flyline">飞线</RouterLink>
         <RouterLink to="/flashWall">动态围墙</RouterLink>
+        <RouterLink to="/flashLine">流光矿界线</RouterLink>
       </nav>
     </div>
   </header>
