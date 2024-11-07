@@ -94,6 +94,16 @@ const router = createRouter({
       path: '/flashLine',
       name: 'flashLine',
       component: () => import('@/views/flashLine/index.vue')
+    },
+    {
+      path: '/video',
+      name: 'video',
+      component: () => import('@/views/video/index.vue')
+    },
+    {
+      path: '/visualTracking',
+      name: 'visualTracking',
+      component: () => import('@/views/visualTracking/index.vue')
     }
   ]
 })
