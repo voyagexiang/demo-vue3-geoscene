@@ -24,6 +24,8 @@ import { RouterLink, RouterView } from 'vue-router'
         <RouterLink to="/flyline">飞线</RouterLink>
         <RouterLink to="/flashWall">动态围墙</RouterLink>
         <RouterLink to="/flashLine">流光矿界线</RouterLink>
+        <RouterLink to="/video">视频融合</RouterLink>
+        <RouterLink to="/visualTracking">沿线漫游</RouterLink>
       </nav>
     </div>
   </header>
