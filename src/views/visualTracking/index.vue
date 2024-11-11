@@ -1,14 +1,29 @@
 <template>
-  <div id="viewDiv"></div>
+  <div id="content">
+    <div id="viewDiv"></div>
+    <div id="infoDiv" ref="infoDiv">
+      <popup-component :lng="lng" :lat="lat"></popup-component>
+    </div>
+  </div>
+
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import Map from '@geoscene/core/Map'
 import SceneView from '@geoscene/core/views/SceneView'
 import Track from '@geoscene/core/widgets/Track.js'
 import geolocate from 'mock-geolocation'
 
+import IntegratedMesh3DTilesLayer from '@geoscene/core/layers/IntegratedMesh3DTilesLayer.js'
+import ElevationLayer from '@geoscene/core/layers/ElevationLayer.js'
+import Ground from '@geoscene/core/Ground.js'
+import PopupComponent from '@/views/visualTracking/popup/PopupComponent.vue'
+
+// 获取 infoDiv 的 DOM 元素
+const infoDiv = ref('infoDiv')
+const lng = ref('')
+const lat = ref('')
 
 onMounted(() => {
   stubGeolocation()
@@ -17,27 +32,38 @@ onMounted(() => {
 })
 
 const initMap = () => {
+
+  const layer = new IntegratedMesh3DTilesLayer({
+    url: 'http://gis.sinoma-sd.cn/model/taian3dtiles/tileset.json'
+  })
+
+  const elevationLayer = new ElevationLayer({
+    url: 'http://ltks.nonmine.com/server/rest/services/taiandsm6/ImageServer'
+  })
+
   let map = new Map({
-    basemap: 'tianditu-vector'
+    basemap: 'tianditu-vector',
+    ground: new Ground({ layers: [elevationLayer] }),
+    layers: [layer]
   })
 
-  const view = new SceneView({
-    map: map,
+  let view = new SceneView({
     container: 'viewDiv',
-    center: [117.187038, 34.057322],
-    zoom: 18,
-    ui: {
-      components: ['attribution'] // replace default set of UI components
-    }
+    map
   })
 
+
+  view.when(function() {
+    view.extent = layer.fullExtent
+
+  })
 
   const track = new Track({
     view: view,
     goToLocationEnabled: false
   })
-  view.ui.add(track, 'top-left')
-
+  view.ui.add(track, 'top-right')
+  // 漫游
   view.when(() => {
     let prevLocation = view.center
 
@@ -46,8 +72,8 @@ const initMap = () => {
 
       view.goTo({
         center: location,
-        tilt: 50,
-        scale: 2500,
+        tilt: 70,
+        scale: 500,
         heading: 360 - getHeading(location, prevLocation), // only applies to SceneView
         rotation: 360 - getHeading(location, prevLocation) // only applies to MapView
       })
@@ -64,15 +90,26 @@ const initMap = () => {
 
   })
 
-
   view.on('click', async function(event) {
-    var hit = await view.hitTest(event)
+    let hit = await view.hitTest(event)
     console.log('===========hit', hit)
     geolocate.change({
       lat: hit.ground.mapPoint.latitude,
       lng: hit.ground.mapPoint.longitude
     })
   })
+  view.on('click', async function(event) {
+    let hit = await view.hitTest(event)
+    console.log('===========hit', hit)
+    view.hitTest(event).then(function() {
+      lat.value = hit.ground.mapPoint.latitude
+      lng.value = hit.ground.mapPoint.longitude
+      // 显示 infoDiv
+      infoDiv.value.style.display = 'block'
+    })
+  })
+
+
 }
 
 function getHeading(point, oldPoint) {
@@ -87,9 +124,14 @@ function getHeading(point, oldPoint) {
 function stubGeolocation() {
   geolocate.use()
 }
+
 </script>
 
 <style scoped>
+#content{
+  position: relative;
+
+}
 #viewDiv {
   padding: 0;
   margin: 0;
@@ -97,35 +139,19 @@ function stubGeolocation() {
   width: 100%;
 }
 
-#overlay {
+#infoDiv {
   position: absolute;
-  font-size: 16px;
-  z-index: 2;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  background: rgba(0, 0, 0, 0.7);
-}
-
-#overlay button {
-  background: transparent;
-  border: 0;
-  border: 1px solid rgb(255, 255, 255);
-  border-radius: 4px;
-  color: #ffffff;
-  padding: 12px 18px;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-
-#video {
-  display: none;
+  bottom: 10px;
+  /* right: 10px; */
+  left: 50%;
+  padding: 10px;
+  background-color: white;
+  border: 1px solid #ccc;
+  z-index: 1000;
+  /* display: none; */
+  width: 80vh;
+  height: 25vh;
+  margin-left: -40vh;
 }
 </style>
 <style src="../../../node_modules/@geoscene/core/assets/geoscene/themes/light/main.css" />
